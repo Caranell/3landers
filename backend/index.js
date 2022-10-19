@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { connectToDB } = require('./database');
-const profileRouter = require('./routes/profile');
+const profileRouter = require('./controllers/profile');
 
 require('dotenv').config();
 
