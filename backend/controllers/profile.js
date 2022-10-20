@@ -1,11 +1,13 @@
 const { Router } = require('express');
-const { getDbConnection } = require('../database');
 const { isUserAuthenticated } = require('../middleware/auth');
-const { updateProfileInfo, getProfileInfo } = require('../models/profile');
+const {
+  updateProfileInfo,
+  getProfileInfo,
+  isUsernameTaken,
+  isTwitterHandleTaken,
+} = require('../models/profile');
 
 const router = Router();
-const db = getDbConnection();
-const Profiles = db.collection('Profiles');
 
 router.get('/:address', async (req, res) => {
   const { address } = req.params;
@@ -18,9 +20,7 @@ router.get('/:address', async (req, res) => {
 router.post('/twitterHandle', isUserAuthenticated, async (req, res) => {
   const { twitterHandle, address } = req.body;
 
-  const isAlreadyTaken = await Profiles.findOne({
-    twitterHandle,
-  });
+  const isAlreadyTaken = await isTwitterHandleTaken({ address, twitterHandle });
 
   if (isAlreadyTaken) {
     return res.status(400).send({
@@ -40,9 +40,7 @@ router.post('/twitterHandle', isUserAuthenticated, async (req, res) => {
 router.post('/username', isUserAuthenticated, async (req, res) => {
   const { username, address } = req.body;
 
-  const isAlreadyTaken = await Profiles.findOne({
-    username,
-  });
+  const isAlreadyTaken = await isUsernameTaken({ address, username });
 
   if (isAlreadyTaken) {
     return res.status(400).send({

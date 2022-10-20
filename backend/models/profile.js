@@ -1,9 +1,8 @@
 const { getDbConnection } = require('../database');
 
-const db = getDbConnection();
-const Profiles = db.collection('Profiles');
-
 const updateProfileInfo = async ({ address, field, value }) => {
+  const Profiles = getDbConnection().collection('Profiles');
+
   const profile = await Profiles.findOne({
     address,
   });
@@ -12,14 +11,19 @@ const updateProfileInfo = async ({ address, field, value }) => {
     throw new Error('No info about the user');
   }
 
-  await Profiles.updateOne({ address }, {
-    $set: {
-      [field]: value,
+  await Profiles.updateOne(
+    { address },
+    {
+      $set: {
+        [field]: value,
+      },
     },
-  });
+  );
 };
 
 const getProfileInfo = async ({ address }) => {
+  const Profiles = getDbConnection().collection('Profiles');
+
   const profile = await Profiles.findOne({
     address,
   });
@@ -27,7 +31,35 @@ const getProfileInfo = async ({ address }) => {
   return profile;
 };
 
+const isUsernameTaken = async ({ address, username }) => {
+  const Profiles = getDbConnection().collection('Profiles');
+
+  const profile = await Profiles.findOne({
+    username,
+    address: {
+      $ne: address,
+    },
+  });
+
+  return Boolean(profile);
+};
+
+const isTwitterHandleTaken = async ({ address, twitterHandle }) => {
+  const Profiles = getDbConnection().collection('Profiles');
+
+  const profile = await Profiles.findOne({
+    twitterHandle,
+    address: {
+      $ne: address,
+    },
+  });
+
+  return Boolean(profile);
+};
+
 module.exports = {
   updateProfileInfo,
   getProfileInfo,
+  isUsernameTaken,
+  isTwitterHandleTaken,
 };
