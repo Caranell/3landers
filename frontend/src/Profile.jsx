@@ -5,6 +5,7 @@ import {
   updateTwitterHandle,
   updateUsername,
 } from './api/profile';
+import { HTTP_STATUSES } from './constants/http';
 import { SignInButton } from './SignInButton';
 
 export const Profile = () => {
@@ -42,10 +43,6 @@ export const Profile = () => {
     }
   }, [state.address]);
 
-  if (state.error) {
-    return <div>Got error while sigining the message</div>;
-  }
-
   return (
     <div>
       {state.address ? (
@@ -55,8 +52,13 @@ export const Profile = () => {
               ? `Hello, ${username}!`
               : `Hello, ${state.address}! Please set your username and twitter handle`}
           </h1>
-          <div className="flex justify-around mt-10 mb-10">
-            <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center gap-12">
+          <div className="flex flex-col justify-around mt-10 mb-10">
+            <form
+              className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center gap-12"
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
               <div className="flex flex-col gap-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
@@ -71,7 +73,15 @@ export const Profile = () => {
                   onChange={onUsernameChange}
                   value={username}
                 />
-                <button onClick={() => updateUsername({ username })}>
+                <button
+                  onClick={() => updateUsername({ username }).then((resp) => {
+                    if (resp.status === HTTP_STATUSES.BAD_REQUEST) {
+                      setState((x) => ({ ...x, error: resp.data.error }));
+                    } else {
+                      setState((x) => ({ ...x, error: null }));
+                    }
+                  })}
+                >
                   Update username
                 </button>
               </div>
@@ -85,16 +95,27 @@ export const Profile = () => {
                 <input
                   type="text"
                   id="twitterHandle"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   onChange={onTwitterHandleChange}
                   value={twitterHandle}
                 />
-                <button onClick={() => updateTwitterHandle({ twitterHandle })}>
+                <button
+                  onClick={() => updateTwitterHandle({ twitterHandle }).then((resp) => {
+                    if (resp.status === HTTP_STATUSES.BAD_REQUEST) {
+                      setState((x) => ({ ...x, error: resp.data.error }));
+                    } else {
+                      setState((x) => ({ ...x, error: null }));
+                    }
+                  })}
+                >
                   Update twitter handle
                 </button>
               </div>
             </form>
+            {state.error && (
+              <p className="text-red-600">{`Error: ${state.error}`}</p>
+            )}
           </div>
-
           <button
             onClick={async () => {
               await signOut();
