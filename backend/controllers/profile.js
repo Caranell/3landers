@@ -12,9 +12,9 @@ const router = Router();
 router.get('/', async (req, res) => {
   const { address } = req.session.siwe;
 
-  const profile = getProfileInfo({ address });
+  const profile = await getProfileInfo({ address });
 
-  res.status(200).send(profile);
+  res.status(200).json(profile);
 });
 
 router.post('/twitterHandle', isUserAuthenticated, async (req, res) => {
