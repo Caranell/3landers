@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+
 const { connectToDB } = require('./database');
 const profileRouter = require('./controllers/profile');
 const authRouter = require('./controllers/auth');
@@ -23,7 +24,6 @@ app.use(
     secret: SECRET,
     resave: true,
     saveUninitialized: false,
-    cookie: { maxAge: 60000 },
   }),
 );
 
