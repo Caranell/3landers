@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { generateNonce, SiweMessage } = require('siwe');
+const { createUserProfile } = require('../models/profile');
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.post('/verify', async (req, res) => {
 
     req.session.siwe = fields;
     await req.session.save();
+    await createUserProfile({ address: fields.address });
 
     return res.status(200).json({ ok: true });
   } catch (_error) {

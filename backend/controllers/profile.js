@@ -9,8 +9,8 @@ const {
 
 const router = Router();
 
-router.get('/:address', async (req, res) => {
-  const { address } = req.params;
+router.get('/', async (req, res) => {
+  const { address } = req.session.siwe;
 
   const profile = getProfileInfo({ address });
 
@@ -18,7 +18,8 @@ router.get('/:address', async (req, res) => {
 });
 
 router.post('/twitterHandle', isUserAuthenticated, async (req, res) => {
-  const { twitterHandle, address } = req.body;
+  const { twitterHandle } = req.body;
+  const { address } = req.session.siwe;
 
   const isAlreadyTaken = await isTwitterHandleTaken({ address, twitterHandle });
 
@@ -38,7 +39,8 @@ router.post('/twitterHandle', isUserAuthenticated, async (req, res) => {
 });
 
 router.post('/username', isUserAuthenticated, async (req, res) => {
-  const { username, address } = req.body;
+  const { username } = req.body;
+  const { address } = req.session.siwe;
 
   const isAlreadyTaken = await isUsernameTaken({ address, username });
 
@@ -56,7 +58,5 @@ router.post('/username', isUserAuthenticated, async (req, res) => {
 
   return res.sendStatus(200);
 });
-
-router.post('/auth', async (req, res) => {});
 
 module.exports = router;

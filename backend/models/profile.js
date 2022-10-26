@@ -1,5 +1,23 @@
 const { getDbConnection } = require('../database');
 
+const createUserProfile = async ({ address }) => {
+  const Profiles = getDbConnection().collection('Profiles');
+
+  const existingProfile = await Profiles.findOne({
+    address,
+  });
+
+  if (existingProfile) {
+    return existingProfile;
+  }
+
+  const profile = await Profiles.insertOne({
+    address,
+  });
+
+  return profile;
+};
+
 const updateProfileInfo = async ({ address, field, value }) => {
   const Profiles = getDbConnection().collection('Profiles');
 
@@ -62,4 +80,5 @@ module.exports = {
   getProfileInfo,
   isUsernameTaken,
   isTwitterHandleTaken,
+  createUserProfile,
 };
