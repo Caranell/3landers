@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount, useNetwork, useSignMessage } from 'wagmi';
 import { SiweMessage } from 'siwe';
-import { api } from '../lib/axios';
+import { getNonce, verifySignature } from './api/auth';
 
 export const SignInButton = ({
   onSuccess,
@@ -19,8 +19,7 @@ export const SignInButton = ({
 
   const fetchNonce = async () => {
     try {
-      const { data: nonce } = await api.get('/auth/nonce');
-      console.log('nonce :>> ', nonce);
+      const nonce = await getNonce();
       setState((x) => ({ ...x, nonce }));
     } catch (error) {
       setState((x) => ({ ...x, error }));
@@ -47,7 +46,8 @@ export const SignInButton = ({
       });
 
       // Verify signature
-      const verifyRes = await api.post('/auth/verify', { message, signature });
+      const verifyRes = await verifySignature({ message, signature });
+
       if (!verifyRes.ok) throw new Error('Error verifying message');
 
       setState((x) => ({ ...x, loading: false }));
