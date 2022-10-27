@@ -8,7 +8,7 @@ const authRouter = require('./controllers/auth');
 
 require('dotenv').config();
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3002;
 const SECRET = process.env.SECRET || 'secret';
 
 const app = express();

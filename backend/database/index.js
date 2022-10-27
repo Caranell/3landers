@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 
-const CONNECTION_URL = process.env.CONNECTION_URL || 'mongodb://localhost:27017';
+const CONNECTION_URL = process.env.CONNECTION_URL || 'mongodb://10.0.0.10:27017';
 const DB_NAME = 'Profiles';
 
 let dbConnection;

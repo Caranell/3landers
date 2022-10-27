@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: backend
+    depends_on:
+      - mongodb
+    restart: always
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/:/home/backend/app
+      - /home/backend/app/node_modules
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./backend/.env
+    networks:
+      - docker-net
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    entrypoint: ["/bin/sh", "./entrypoint.sh"]
+    volumes:
+      - ./frontend:/home/frontend/app
+      - /home/frontend/app/node_modules
+    networks:
+      - docker-net
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    ports: 
+      - "27017:27017"
+    networks:
+      docker-net:
+        ipv4_address: 10.0.0.10
+
+
+networks:
+  docker-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.0.0.10/24"
